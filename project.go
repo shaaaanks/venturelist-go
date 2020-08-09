@@ -11,5 +11,5 @@ type project struct {
 	GithubLink     string   `json:"github_link" validate:"required"`
 	TechStack      []string `json:"tech_stack" validate:"required"`
 	Mockups        []string `json:"mockups" validate:"required"`
-	Screenshots    []string `json:"screenshotss" validate:"required"`
+	Screenshots    []string `json:"screenshots" validate:"required"`
 }
