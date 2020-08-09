@@ -10,10 +10,6 @@ import (
 	"github.com/gorilla/mux"
 )
 
-func index(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprint(w, "Hello, World")
-}
-
 func getProjects(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
@@ -106,7 +102,6 @@ func deleteProject(w http.ResponseWriter, r *http.Request) {
 func createRouter() *mux.Router {
 	router := mux.NewRouter().StrictSlash(true)
 
-	router.HandleFunc("/", index).Methods("GET")
 	router.HandleFunc("/project", createProject).Methods("POST")
 	router.HandleFunc("/projects", getProjects).Methods("GET")
 	router.HandleFunc("/project/{id}", getProject).Methods("GET")
