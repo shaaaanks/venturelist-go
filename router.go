@@ -42,17 +42,6 @@ func getProject(w http.ResponseWriter, r *http.Request) {
 func createProject(w http.ResponseWriter, r *http.Request) {
 	var project project
 
-	// requestDump, err := httputil.DumpRequest(r, true)
-	// if err != nil {
-	// 	fmt.Println(err)
-	// }
-	// fmt.Println(string(requestDump))
-
-	// request, err := ioutil.ReadAll(r.Body)
-	// if err != nil {
-	// 	fmt.Fprintf(w, "Error reading Project from request: %v", err)
-	// 	return
-	// }
 	err := r.ParseMultipartForm(10 << 20)
 	if err != nil {
 		fmt.Fprintf(w, "Error retrieving request: %v", err)
