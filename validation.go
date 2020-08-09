@@ -6,9 +6,10 @@ import (
 	"gopkg.in/go-playground/validator.v9"
 )
 
+var v = validator.New()
+
 func validate(item interface{}) error {
-	validate := validator.New()
-	err := validate.Struct(item)
+	err := v.Struct(item)
 
 	if err != nil {
 		if _, ok := err.(*validator.InvalidValidationError); ok {
