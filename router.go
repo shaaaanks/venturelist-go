@@ -70,20 +70,26 @@ func createProject(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	file, handler, err := r.FormFile("screenshots")
-	if err != nil {
-		fmt.Fprintf(w, "Error retrieving file: %v", err)
-		return
-	}
-	defer file.Close()
+	screenshots := r.MultipartForm.File["screenshots"]
+	var screenshotLocations []string
 
-	location, err := uploadFile(handler.Filename, file)
-	if err != nil {
-		fmt.Fprintf(w, "Error uploading file: %v", err)
-		return
+	for i := range screenshots {
+		file, err := screenshots[i].Open()
+		defer file.Close()
+		if err != nil {
+			fmt.Fprintf(w, "Error retrieving file: %v", err)
+			return
+		}
+
+		location, err := uploadFile(screenshots[i].Filename, file)
+		if err != nil {
+			fmt.Fprintf(w, "Error uploading file: %v", err)
+			return
+		}
+		screenshotLocations = append(screenshotLocations, location)
 	}
 
-	project.Screenshots = []string{location}
+	project.Screenshots = screenshotLocations
 
 	database.Create(project)
 
