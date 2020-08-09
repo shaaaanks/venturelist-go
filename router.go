@@ -6,8 +6,12 @@ import (
 	"io/ioutil"
 	"net/http"
 
+	"github.com/gorilla/schema"
+
 	"github.com/gorilla/mux"
 )
+
+var decoder = schema.NewDecoder()
 
 func getProjects(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
@@ -38,19 +42,48 @@ func getProject(w http.ResponseWriter, r *http.Request) {
 func createProject(w http.ResponseWriter, r *http.Request) {
 	var project project
 
-	request, err := ioutil.ReadAll(r.Body)
+	// requestDump, err := httputil.DumpRequest(r, true)
+	// if err != nil {
+	// 	fmt.Println(err)
+	// }
+	// fmt.Println(string(requestDump))
+
+	// request, err := ioutil.ReadAll(r.Body)
+	// if err != nil {
+	// 	fmt.Fprintf(w, "Error reading Project from request: %v", err)
+	// 	return
+	// }
+	err := r.ParseMultipartForm(10 << 20)
 	if err != nil {
-		fmt.Fprintf(w, "Error reading Project from request: %v", err)
+		fmt.Fprintf(w, "Error retrieving request: %v", err)
 		return
 	}
 
-	json.Unmarshal(request, &project)
+	err = decoder.Decode(&project, r.PostForm)
+	if err != nil {
+		fmt.Fprintf(w, "Error decoding request information: %v", err)
+	}
 
 	err = validate(project)
 	if err != nil {
 		fmt.Fprintf(w, "Validation error: %v", err)
 		return
 	}
+
+	file, handler, err := r.FormFile("screenshots")
+	if err != nil {
+		fmt.Fprintf(w, "Error retrieving file: %v", err)
+		return
+	}
+	defer file.Close()
+
+	location, err := uploadFile(handler.Filename, file)
+	if err != nil {
+		fmt.Fprintf(w, "Error uploading file: %v", err)
+		return
+	}
+
+	project.Screenshots = []string{location}
 
 	database.Create(project)
 
