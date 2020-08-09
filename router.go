@@ -44,9 +44,16 @@ func createProject(w http.ResponseWriter, r *http.Request) {
 	request, err := ioutil.ReadAll(r.Body)
 	if err != nil {
 		fmt.Fprintf(w, "Error reading Project from request: %v", err)
+		return
 	}
 
 	json.Unmarshal(request, &project)
+
+	err = validate(project)
+	if err != nil {
+		fmt.Fprintf(w, "Validation error: %v", err)
+		return
+	}
 
 	database.Create(project)
 
@@ -62,9 +69,16 @@ func updateProject(w http.ResponseWriter, r *http.Request) {
 	request, err := ioutil.ReadAll(r.Body)
 	if err != nil {
 		fmt.Fprintf(w, "Error reading Project from request: %v", err)
+		return
 	}
 
 	json.Unmarshal(request, &project)
+
+	err = validate(project)
+	if err != nil {
+		fmt.Fprintf(w, "Validation error: %v", err)
+		return
+	}
 
 	err = database.Update(projectID, project)
 	if err != nil {
