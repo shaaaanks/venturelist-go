@@ -51,6 +51,7 @@ func createProject(w http.ResponseWriter, r *http.Request) {
 	err = decoder.Decode(&project, r.PostForm)
 	if err != nil {
 		fmt.Fprintf(w, "Error decoding request information: %v", err)
+		return
 	}
 
 	err = validate(project)
