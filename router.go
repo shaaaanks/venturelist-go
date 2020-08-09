@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
-	"log"
 	"net/http"
 
 	"github.com/gorilla/mux"
@@ -16,7 +15,8 @@ func getProjects(w http.ResponseWriter, r *http.Request) {
 	projects, err := database.FindAll()
 
 	if err != nil {
-		log.Fatalf("Error getting items from database: %v", err)
+		fmt.Fprintf(w, "Error getting items from database: %v", err)
+		return
 	}
 
 	json.NewEncoder(w).Encode(projects)
@@ -27,7 +27,8 @@ func getProject(w http.ResponseWriter, r *http.Request) {
 
 	project, err := database.Find(projectID)
 	if err != nil {
-		log.Fatalf("Error getting item from database: %v", err)
+		fmt.Fprintf(w, "Error getting item from database: %v", err)
+		return
 	}
 
 	w.Header().Set("Content-Type", "application/json")
@@ -78,7 +79,8 @@ func updateProject(w http.ResponseWriter, r *http.Request) {
 
 	err = database.Update(projectID, project)
 	if err != nil {
-		log.Fatalf("Error updating item in database: %v", err)
+		fmt.Fprintf(w, "Error updating item in database: %v", err)
+		return
 	}
 
 	w.WriteHeader(http.StatusAccepted)
@@ -91,7 +93,8 @@ func deleteProject(w http.ResponseWriter, r *http.Request) {
 
 	err := database.Delete(projectID)
 	if err != nil {
-		log.Fatalf("Error deleting item from database: %v", err)
+		fmt.Fprintf(w, "Error deleting item from database: %v", err)
+		return
 	}
 
 	w.WriteHeader(http.StatusOK)
