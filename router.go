@@ -55,6 +55,27 @@ func createProject(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(project)
 }
 
+func updateProject(w http.ResponseWriter, r *http.Request) {
+	projectID := mux.Vars(r)["id"]
+	var project project
+
+	request, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		fmt.Fprintf(w, "Error reading Project from request: %v", err)
+	}
+
+	json.Unmarshal(request, &project)
+
+	err = database.Update(projectID, project)
+	if err != nil {
+		log.Fatalf("Error updating item in database: %v", err)
+	}
+
+	w.WriteHeader(http.StatusAccepted)
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(project)
+}
+
 func createRouter() *mux.Router {
 	router := mux.NewRouter().StrictSlash(true)
 
@@ -62,6 +83,7 @@ func createRouter() *mux.Router {
 	router.HandleFunc("/project", createProject).Methods("POST")
 	router.HandleFunc("/projects", getProjects).Methods("GET")
 	router.HandleFunc("/project/{id}", getProject).Methods("GET")
+	router.HandleFunc("/project/{id}", updateProject).Methods("PATCH")
 
 	return router
 }
