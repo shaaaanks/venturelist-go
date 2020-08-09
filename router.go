@@ -76,6 +76,19 @@ func updateProject(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(project)
 }
 
+func deleteProject(w http.ResponseWriter, r *http.Request) {
+	projectID := mux.Vars(r)["id"]
+
+	err := database.Delete(projectID)
+	if err != nil {
+		log.Fatalf("Error deleting item from database: %v", err)
+	}
+
+	w.WriteHeader(http.StatusOK)
+	w.Header().Set("Content-Type", "application/json")
+	fmt.Fprintf(w, "The project with the ID %v has been deleted successfully", projectID)
+}
+
 func createRouter() *mux.Router {
 	router := mux.NewRouter().StrictSlash(true)
 
@@ -84,6 +97,7 @@ func createRouter() *mux.Router {
 	router.HandleFunc("/projects", getProjects).Methods("GET")
 	router.HandleFunc("/project/{id}", getProject).Methods("GET")
 	router.HandleFunc("/project/{id}", updateProject).Methods("PATCH")
+	router.HandleFunc("/project/{id}", deleteProject).Methods("DELETE")
 
 	return router
 }
