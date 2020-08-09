@@ -70,6 +70,25 @@ func createProject(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	mockups := r.MultipartForm.File["mockups"]
+	var mockupLocations []string
+
+	for i := range mockups {
+		file, err := mockups[i].Open()
+		defer file.Close()
+		if err != nil {
+			fmt.Fprintf(w, "Error retrieving file: %v", err)
+			return
+		}
+
+		location, err := uploadFile(mockups[i].Filename, file)
+		if err != nil {
+			fmt.Fprintf(w, "Error uploading file: %v", err)
+			return
+		}
+		mockupLocations = append(mockupLocations, location)
+	}
+
 	screenshots := r.MultipartForm.File["screenshots"]
 	var screenshotLocations []string
 
@@ -89,6 +108,7 @@ func createProject(w http.ResponseWriter, r *http.Request) {
 		screenshotLocations = append(screenshotLocations, location)
 	}
 
+	project.Mockups = mockupLocations
 	project.Screenshots = screenshotLocations
 
 	database.Create(project)
