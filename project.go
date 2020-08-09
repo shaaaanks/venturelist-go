@@ -5,7 +5,7 @@ type project struct {
 	UserID         string   `json:"user_id"`
 	ProfilePicture string   `json:"profile_picture"`
 	Name           string   `json:"name" validate:"required"`
-	Description    string   `json:"descrition" validate:"required"`
+	Description    string   `json:"description" validate:"required"`
 	Summary        string   `json:"summary" validate:"required"`
 	WebsiteLink    string   `json:"website_link" validate:"required"`
 	GithubLink     string   `json:"github_link" validate:"required"`
