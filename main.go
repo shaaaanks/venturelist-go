@@ -16,6 +16,7 @@ var config ApplicationConfig
 func initialiseConfig() error {
 	viper.SetConfigName("config")
 	viper.AddConfigPath(".")
+
 	err := viper.ReadInConfig()
 	if err != nil {
 		return fmt.Errorf("Error loading config file: %v", err)
@@ -46,7 +47,7 @@ func initialiseDatabase() error {
 		return fmt.Errorf("Error loading database driver: %v", err)
 	}
 
-	err = database.Conn()
+	err = database.Conn(config.DatabaseHost, config.DatabaseUsername, config.DatabasePassword)
 	if err != nil {
 		return fmt.Errorf("Error connecting to database: %v", err)
 	}
