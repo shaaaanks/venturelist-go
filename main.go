@@ -23,7 +23,12 @@ func initialiseConfig() error {
 
 	err = viper.UnmarshalKey("aws", &config)
 	if err != nil {
-		return fmt.Errorf("Error reading config file: %v", err)
+		return fmt.Errorf("Error reading config file - aws: %v", err)
+	}
+
+	err = viper.UnmarshalKey("database", &config)
+	if err != nil {
+		return fmt.Errorf("Error reading config file - database: %v", err)
 	}
 
 	err = validate(config)
@@ -36,7 +41,7 @@ func initialiseConfig() error {
 
 func initialiseDatabase() error {
 	var err error
-	database, err = kibisis.GetDriver("arangoDB")
+	database, err = kibisis.GetDriver(config.DatabaseDriver)
 	if err != nil {
 		return fmt.Errorf("Error loading database driver: %v", err)
 	}
@@ -46,7 +51,7 @@ func initialiseDatabase() error {
 		return fmt.Errorf("Error connecting to database: %v", err)
 	}
 
-	err = database.Init("venturelist", "projects")
+	err = database.Init(config.Database, config.DatabaseCollection)
 	if err != nil {
 		return fmt.Errorf("Error initialising database: %v", err)
 	}
